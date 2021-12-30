@@ -1,0 +1,21 @@
+---
+- name: "Apache installation depuis Docker"
+  hosts: prod
+  become: true
+#  vars:
+#    ansible_sudo_pass: ubuntu
+  pre_tasks:
+#    - name: Installation EPEL repo
+#      package: name=epel-release state=present
+#      when: ansible_distribution == "Ubuntu"
+    - name: Installation Python-Pip
+      apt: name=python-pip state=present update_cache=yes
+    - name: Installation de Docker Python
+      pip: name=docker-py
+  tasks:
+    - name: Creation du Conteneur Apache
+      docker_container:
+        name: apache
+        image: httpd
+        ports:
+          - "80:80"
