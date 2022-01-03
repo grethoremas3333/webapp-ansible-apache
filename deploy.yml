@@ -5,17 +5,27 @@
 #  vars:
 #    ansible_sudo_pass: ubuntu
   pre_tasks:
-#    - name: Installation EPEL repo
-#      package: name=epel-release state=present
-#      when: ansible_distribution == "Ubuntu"
+    - name: Installation de QQ paquets
+      package: name='{{ item }}' state=present
+      when: ansible_distribution == "CentOS"
+      loop:
+        - epel-release
+        - wget
+        - git
     - name: Installation Python-Pip
       apt: name=python-pip state=present update_cache=yes
     - name: Installation de Docker Python
       pip: name=docker-py
   tasks:
+    - name: Copie du template du SiteWeb
+      template:
+        src: templates/index.html.j2
+        dest: /home/ubuntu/index.html
     - name: Creation du Conteneur Apache
       docker_container:
         name: apache
         image: httpd
         ports:
           - "80:80"
+        volumes:
+          - /home/ubuntu/index.html:/usr/local/apache2/htdocs/index.html
